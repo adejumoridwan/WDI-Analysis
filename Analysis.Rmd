@@ -1,0 +1,65 @@
+---
+title: "WDI Anlaysis"
+author: "Adejumo Ridwan Suleiman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Data Cleaning
+```{r}
+library(tidyverse)
+life_exp <- read_csv("~/WDI-Analysis/LE_DATA.csv") |> 
+  rename(
+    Country = `Country Name`,
+    Code = `Country Code`
+  ) |> 
+  as.data.frame()
+skimr::skim(life_exp)
+```
+## Handling Missing values using the mice package
+
+```{r}
+# Identify missing values in the dataset
+missing_values <- is.na(li)
+
+# Calculate median of the dataset
+median_value <- median(dataset, na.rm = TRUE)
+
+# Replace missing values with median
+dataset[missing_values] <- ifelse(missing_values, median_value, dataset[missing_values])
+
+```
+
+
+```{r}
+#if (!require("BiocManager", quietly = TRUE))
+    #install.packages("BiocManager")
+
+#BiocManager::install("impute")
+# Load impute package
+library(impute)
+
+# Replace missing values with median of each column
+dataset <- colMedians(life_exp)
+
+```
+
+- Code used for running the missing value inmputation was gotten from the site https://www.r-bloggers.com/2016/06/handling-missing-data-with-mice-package-a-simple-approach/
+
+```{r}
+library(mice)
+init = mice(life_exp, maxit=0) 
+init
+meth = init$method
+meth
+predM = init$predictorMatrix
+predM
+meth[c(1,2,3)]=0
+meth[-c(1,2,3)]="pmm"
+meth
+
+set.seed(2022)
+imputed = mice(life_exp, method=meth, predictorMatrix=predM, m=5)
+head(life_exp[,-c(1,2,3)])
+```
+
